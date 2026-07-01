@@ -111,6 +111,27 @@ Standalone CLIs — args/stdin in, file or JSON out. **Only third-party dependen
   drop the line before completion. This is what keeps "never invent" honest once the
   host reasons freely.
 
+### 3.4 `ats_preview.py` — Stage-2 field-extraction proxy
+- **Tech:** spaCy (`en_core_web_sm`) via a resume-parser layer (`pyresparser`), reading
+  the rendered DOCX.
+- `python scripts/ats_preview.py resume.docx` → JSON of the structured fields a real ATS
+  would extract (name, contact, employers, titles, dates, skills). Optionally run on the
+  original resume for a before/after comparison.
+- **Why it's a proxy, not the real thing:** the named commercial engines
+  (Sovren/Textkernel, HireAbility, Affinda) are **proprietary and closed-source** — none
+  are pip-installable, so they cannot run in a keyless local skill. This script
+  approximates their Stage-2 field extraction with an open spaCy parser and is labeled as
+  a proxy. It is **non-blocking** (informational), and **degrades gracefully** — if spaCy
+  or the model isn't installed, it emits a "run `python -m spacy download en_core_web_sm`
+  to enable the ATS field preview" message rather than failing the run.
+
+### 3.5 The two parsing stages (why there are two verification steps)
+A real ATS parses in two stages; the skill mirrors both, with different fidelity:
+| Stage | What it does | Our tool | Fidelity |
+|---|---|---|---|
+| **1. Text extraction** | file → raw text (where columns/tables/images break resumes) | `render_docx.py --extract` (python-docx) | **Real** — genuine extraction, the same first step every parser performs |
+| **2. Field extraction** | text → {name, title, dates, skills} | `ats_preview.py` (spaCy/pyresparser) | **Proxy** — approximates the proprietary ML engines |
+
 ---
 
 ## 4. The corpus (data layer)
@@ -186,9 +207,14 @@ job description ┘
 
 **Requirements**
 - A host that loads skills (Claude Code or Codex).
-- Python 3.11+ and `pip install python-docx` (the only third-party dependency;
-  `difflib` is stdlib).
-- No API keys. No network services (company research uses the host's web tools).
+- Python 3.11+.
+- Core dependency: `python-docx` (`difflib` for traceability is stdlib).
+- Field-preview dependency (Stage 2): `spacy` + `pyresparser` +
+  `python -m spacy download en_core_web_sm`. Heavier (~hundreds of MB with the model),
+  fully local and keyless. Core tailoring works without it; the preview degrades to an
+  install hint if absent.
+- No API keys. No network services (company research uses the host's web tools; the
+  proprietary parsing engines are never called — Stage 2 uses a local open proxy).
 
 **Testing**
 - The three scripts are **pytest-covered** — the deterministic core is where automated

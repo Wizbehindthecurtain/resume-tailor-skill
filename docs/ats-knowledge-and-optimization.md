@@ -106,6 +106,25 @@ Recruiters also **search** the candidate database with Boolean/keyword queries
 (`("project manager" OR "program manager") AND PMP`), so surfacing in search results
 matters as much as passing an auto-gate — and that, too, is literal.
 
+### 3.3 Can we test against the real engines? (Honest answer: no — so we use proxies)
+The dominant engines — **Sovren/Textkernel** (Sovren was acquired by Textkernel, now
+part of Bullhorn), **HireAbility**, and **Affinda** — are **proprietary, closed-source
+cloud/API products**. None can be `pip install`-ed and run locally, so a keyless local
+skill cannot execute *their* code. What we can do is verify each of the two stages with
+open tooling:
+
+- **Stage 1 (text extraction)** — replicable with open libraries and used as a **real**
+  check: `python-docx` for DOCX (`render_docx.py --extract`), and Apache Tika / pdfplumber
+  / PyMuPDF for PDF. This is the same first step every parser performs, and it's the layer
+  where formatting actually kills resumes — so our parse-back here is genuine, not a proxy.
+- **Stage 2 (field extraction)** — the proprietary ML. We approximate it with an open
+  spaCy-based parser (`ats_preview.py`) to show "what a machine would extract" (name,
+  title, dates, skills), clearly labeled as a **proxy**, not the commercial engine.
+
+So the skill "optimizes for the engine" in the sense that matters — it follows the engines'
+**documented parse-survival and ranking behavior** (the rubric) and verifies with the same
+kind of extraction they perform — without pretending to run their closed code.
+
 ---
 
 ## 4. The rubric: how the knowledge becomes rules

@@ -1,0 +1,16 @@
+[project]
+name = "resume-tailor-skill"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["python-docx>=1.1"]
+
+[project.optional-dependencies]
+preview = ["spacy>=3.7", "pyresparser>=1.0.6"]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools]
+packages = []
+
+[tool.pytest.ini_options]
+pythonpath = ["scripts"]
+testpaths = ["tests"]

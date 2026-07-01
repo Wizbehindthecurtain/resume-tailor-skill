@@ -27,8 +27,18 @@ def corpus_bullets(brain_dir) -> list:
     return bullets
 
 def resume_bullets(resume_text: str) -> list:
-    return [_clean(l.strip()[2:]) for l in resume_text.splitlines()
-            if l.strip().startswith("- ")]
+    lines = resume_text.splitlines()
+    has_exp = any(l.strip().lower().startswith("## ") and "experience" in l.strip().lower()
+                  for l in lines)
+    bullets = []
+    in_exp = not has_exp  # no experience heading anywhere -> collect all (fallback)
+    for line in lines:
+        s = line.strip()
+        if s.startswith("## "):
+            in_exp = ("experience" in s.lower()) if has_exp else True
+        elif in_exp and s.startswith("- "):
+            bullets.append(_clean(s[2:]))
+    return bullets
 
 def untraceable(resume_text: str, brain_dir, threshold: float = 0.5) -> list:
     corpus = corpus_bullets(brain_dir)

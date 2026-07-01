@@ -13,7 +13,7 @@ and an ATS field preview. No API keys. Your personal data stays in your working 
    ```
 3. (Optional) Enable the Stage-2 ATS field preview:
    ```bash
-   pip install spacy pyresparser
+   pip install spacy
    python -m spacy download en_core_web_sm
    ```
 

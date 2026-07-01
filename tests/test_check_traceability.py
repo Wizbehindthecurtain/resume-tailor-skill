@@ -18,3 +18,18 @@ def test_fabricated_bullet_flagged(tmp_path):
     resume = "- Won the Nobel Prize in Physics for cold fusion\n"
     flagged = check_traceability.untraceable(resume, brain)
     assert len(flagged) == 1
+
+def test_only_experience_section_bullets_are_checked(tmp_path):
+    brain = _brain(tmp_path)  # reuse the existing helper (corpus has the thermal-risk bullet)
+    resume = (
+        "## Skills\n- Fabricated skill nobody has\n"
+        "## Work Experience\n### Role\n- Reduced thermal risk 40% by redesigning the pack\n"
+        "- Won the Nobel Prize in Physics\n"
+        "## Education\n- Made-up University\n")
+    flagged = check_traceability.untraceable(resume, brain)
+    # Skills + Education lines are NOT checked (grounded in their own corpus files)
+    assert "fabricated skill nobody has" not in flagged
+    assert "made-up university" not in flagged
+    # A fabricated Work Experience bullet IS flagged; the grounded one is not
+    assert any("nobel" in f for f in flagged)
+    assert not any("thermal risk" in f for f in flagged)

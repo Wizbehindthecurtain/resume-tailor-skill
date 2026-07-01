@@ -20,7 +20,7 @@ Check the user's working directory for `resume-brain/profile.md`.
   1. Ask the user for their resume (PDF path, a file, or pasted text). Read it.
   2. Convert it into corpus files per `references/corpus-schema.md`:
      `profile.md`, `roles/<slug>.md`, `projects/<slug>.md`, `skills.md`,
-     `education.md`, `certifications.md`. **Only facts from their resume — invent nothing.**
+     `education.md`, `certifications.md`, `references.md`. **Only facts from their resume — invent nothing.**
      Tag every bullet with `[metric: …]` and `[skills: …]`.
   3. Write the files into `./resume-brain/`.
   4. Show a summary (roles found, bullet counts, skills) and flag genuine gaps the
@@ -42,11 +42,25 @@ Read `resume-brain/`. Pick the bullets that best prove the must-haves/keywords. 
 each pick's source file. Prefer bullets carrying the exact JD terms (literal-first).
 
 ## Step 5 — WRITE
-Compose the resume in Markdown on `templates/resume_template.md`:
+Compose the resume in Markdown using `templates/resume_template.md`. Use this section order:
+**About Me → Skills → Work Experience → Businesses Owned & Operated (when applicable) → Education → Certifications → References**
+
+- **About Me (company-tailored):** the opening section is a company-tailored "About Me" (not
+  a generic summary). It MUST connect the candidate's real, corpus-grounded experience to the
+  specific target company's mission, values, and role — using the company research from Step 2.
+  Never invent facts about the candidate; the company framing comes from research, the
+  substance comes from the corpus.
 - Reverse-chronological Work Experience with real `MM/YYYY` dates from the corpus.
 - Mirror the JD's phrasing ONLY for skills the corpus proves.
-- Single column, standard headings, no tables/images (parse-survival).
+- **Businesses Owned & Operated (conditional):** if the corpus has projects the candidate
+  founded/owned and they're relevant to the employer (especially ownership-culture or
+  entrepreneurial employers), include a "Businesses Owned & Operated" section from those
+  project entries.
 - Education + Certifications verbatim from the corpus.
+- **References:** include a References section from `references.md`, OR "References available
+  upon request" if the user prefers not to list contacts. (Note the tradeoff: listing
+  reference phone numbers exposes contacts' info to every ATS/recruiter.)
+- Single column, standard headings, no tables/images (parse-survival).
 
 ## Step 6 — SCORE + VERIFY (iterate, max 2 extra passes)
 1. `echo '<json>' | python scripts/score.py` with
@@ -56,6 +70,18 @@ Compose the resume in Markdown on `templates/resume_template.md`:
    **if `untraceable` is non-empty, you MUST fix or drop those lines before continuing.**
 3. If `score` < 85 and there's room to improve (missing keywords the corpus can prove),
    revise and re-score. Cap at 2 extra passes.
+4. **Gap-driven corpus-enrichment prompt:** after scoring, if there are unmet must-haves or
+   missing keywords (gaps), DO NOT stop at the low score and DO NOT fabricate. Instead:
+   a. Present the specific gaps to the user and ASK whether they actually have real
+      experience, qualifications, or metrics for any of them (e.g. "The JD wants OSHA and
+      budget management — do you have those?").
+   b. For each gap the user confirms is real, ADD it to the corpus (the appropriate
+      role/project bullet, skill, or certification in `resume-brain/`), so it's grounded and
+      persists for future applications.
+   c. Re-select / re-write / re-score. Only user-confirmed, real facts — traceability still
+      governs (never add an un-grounded claim).
+   This is the honest score-raising loop: a gap in the score is often a gap in the corpus,
+   not a reason to fabricate.
 
 ## Step 7 — RENDER + PREVIEW + REPORT
 1. `python scripts/render_docx.py --in <resume.md> --out applications/<company>-<date>/resume.docx`

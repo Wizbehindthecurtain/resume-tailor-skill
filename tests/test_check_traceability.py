@@ -19,6 +19,17 @@ def test_fabricated_bullet_flagged(tmp_path):
     flagged = check_traceability.untraceable(resume, brain)
     assert len(flagged) == 1
 
+def test_ventures_checked_references_exempt(tmp_path):
+    brain = _brain(tmp_path)  # existing helper; corpus has the thermal-risk bullet
+    resume = (
+        "## Businesses Owned & Operated\n- Founded a company that cured cancer overnight\n"
+        "## References\n- Jane Smith — VP, Acme — (555) 555-0100\n")
+    flagged = check_traceability.untraceable(resume, brain)
+    # the fabricated venture bullet IS flagged (Businesses is an accomplishment section)
+    assert any("cured cancer" in f for f in flagged)
+    # the reference line is NOT flagged (References is exempt)
+    assert not any("jane smith" in f for f in flagged)
+
 def test_only_experience_section_bullets_are_checked(tmp_path):
     brain = _brain(tmp_path)  # reuse the existing helper (corpus has the thermal-risk bullet)
     resume = (

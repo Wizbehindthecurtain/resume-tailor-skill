@@ -28,6 +28,7 @@ seeds your `resume-brain/` from a resume you provide, then produces
   `check_traceability.py` (blocks un-grounded claims), `ats_preview.py` (field preview).
 
 ## Manual smoke test (acceptance)
+> **Windows:** run this block in **Git Bash or WSL** — it uses POSIX shell (`/tmp`, `mkdir -p`, `printf`), which raw PowerShell/cmd don't support.
 ```bash
 pip install -e ".[dev]"
 pytest -v                       # all script tests pass (ats_preview may SKIP without spaCy)

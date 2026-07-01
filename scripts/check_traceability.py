@@ -26,17 +26,25 @@ def corpus_bullets(brain_dir) -> list:
                     bullets.append(_clean(s[2:]))
     return bullets
 
+# Sections whose bullets are structured facts grounded in their own corpus files
+# (skills.md / education.md / certifications.md / references.md) or are prose intros —
+# NOT accomplishment claims, so they are exempt from the corpus-bullet traceability check.
+_EXEMPT_SECTIONS = {
+    "skills", "education", "certifications", "certs", "references",
+    "about me", "summary", "contact", "profile",
+}
+
 def resume_bullets(resume_text: str) -> list:
-    lines = resume_text.splitlines()
-    has_exp = any(l.strip().lower().startswith("## ") and "experience" in l.strip().lower()
-                  for l in lines)
+    """Bullets from accomplishment sections (Work Experience, Ventures, Projects, ...),
+    excluding the structured-fact sections in _EXEMPT_SECTIONS. With no `## ` headings at
+    all, every bullet is collected (fallback for bare-bullet input)."""
     bullets = []
-    in_exp = not has_exp  # no experience heading anywhere -> collect all (fallback)
-    for line in lines:
+    exempt = False
+    for line in resume_text.splitlines():
         s = line.strip()
         if s.startswith("## "):
-            in_exp = ("experience" in s.lower()) if has_exp else True
-        elif in_exp and s.startswith("- "):
+            exempt = s[3:].strip().lower() in _EXEMPT_SECTIONS
+        elif s.startswith("- ") and not exempt:
             bullets.append(_clean(s[2:]))
     return bullets
 

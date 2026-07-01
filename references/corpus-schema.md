@@ -77,6 +77,23 @@ certifications:
 ---
 ```
 
+## `references.md`
+```markdown
+---
+references:
+  - name: Jane Smith
+    title: VP of Operations
+    company: Acme Corp
+    phone: "(555) 555-0100"
+  - name: John Doe
+    title: Personal Reference
+    company: ""
+    phone: "(555) 555-0111"
+---
+```
+On the resume, list as "Name — Title, Company — Phone", or render "References available
+upon request" if the user prefers not to publish contacts' numbers.
+
 ### Rules
 - Tag every bullet with `[metric: …]` and `[skills: …]` so selection can retrieve well.
 - Dates as `YYYY-MM`; the resume renders them `MM/YYYY`, roles reverse-chronological.

@@ -19,8 +19,13 @@ and an ATS field preview. No API keys. Your personal data stays in your working 
 
 ## Use
 Ask your host: *"Tailor my resume for this job: <URL or pasted JD>."* On first run it
-seeds your `resume-brain/` from a resume you provide, then produces
-`applications/<company>-<date>/resume.docx` + `score-report.md`.
+seeds your `resume-brain/` from a resume you provide (including your references), then produces
+`applications/<company>-<date>/resume.docx` + `score-report.md`. Each output opens with a
+company-tailored About Me paragraph grounded in your corpus and the company's real mission.
+
+## How it improves your score honestly
+When a job reveals gaps, the skill asks whether you actually have that real experience and
+adds it to your corpus rather than fabricating — keeping every claim grounded and traceable.
 
 ## What runs where
 - **Host model:** analyze JD, research the company (its own web tools), select bullets, write.
